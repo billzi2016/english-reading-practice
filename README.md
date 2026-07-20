@@ -55,6 +55,40 @@ pnpm dev
 
 Astro prints the actual local URL after startup. In the latest run it used `http://localhost:4322` because another service was already using the default port.
 
+## Ollama Article Generation
+
+Install the Python client:
+
+```sh
+pip install ollama
+```
+
+List existing topics:
+
+```sh
+python3 llm/ollama_list.py
+```
+
+Generate one article from a specific topic:
+
+```sh
+python3 llm/ollama_generate.py "The Apollo Guidance Computer"
+```
+
+Generate multiple articles from Ollama-proposed topics:
+
+```sh
+python3 llm/ollama_generate.py 12
+```
+
+Use another local Ollama model:
+
+```sh
+OLLAMA_MODEL="gpt-oss:120b" python3 llm/ollama_generate.py 5
+```
+
+Automatic topic selection runs in batches of 5. The generator uses `think="high"`; article writing uses `temperature=0.1`, while topic selection uses `temperature=0.7`. If a topic batch or article fails 3 retries, the script exits non-zero and keeps already created files.
+
 ## Maintenance Notes
 
 - Keep each change as small as possible: prefer data/config/utils changes over page or component edits.
@@ -67,11 +101,6 @@ Astro prints the actual local URL after startup. In the latest run it used `http
 - Keep shared page structure in `src/layouts/BaseLayout.astro`.
 - Keep reusable UI in `src/components/`.
 - Keep browser-only behavior in `src/scripts/interactions.ts`.
-- Use `python3 llm/ollama_list.py` before generating a new article to avoid duplicate topics.
-- Use `python3 llm/ollama_generate.py "Topic"` to create one `src/data/articles/000NN_slug.ts` file automatically.
-- Use `python3 llm/ollama_generate.py 12` or `python3 llm/ollama_generate.py --count 12` to generate multiple articles; automatic topic selection runs in batches of 5.
-- The generator uses Ollama GPT-OSS 120B with `think="high"`; article writing uses `temperature=0.1`, while topic selection uses `temperature=0.7`.
-- If a topic batch or article fails 3 retries, the script exits non-zero and keeps already created files.
 - GPT-OSS 120B's documented knowledge cutoff is 2024-06-01, so generated factual stories should stay within information knowable before that date.
 
 ## Content Notice

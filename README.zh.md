@@ -43,6 +43,40 @@ pnpm dev
 
 启动后 Astro 会在终端输出实际访问地址。上一次运行时使用的是 `http://localhost:4322`，因为默认端口被占用。
 
+## Ollama 文章生成
+
+安装 Python 客户端：
+
+```sh
+pip install ollama
+```
+
+列出当前所有文章题目：
+
+```sh
+python3 llm/ollama_list.py
+```
+
+指定题目生成 1 篇文章：
+
+```sh
+python3 llm/ollama_generate.py "The Apollo Guidance Computer"
+```
+
+让 Ollama 自动想题目并生成多篇文章：
+
+```sh
+python3 llm/ollama_generate.py 12
+```
+
+临时指定另一个本地 Ollama 模型：
+
+```sh
+OLLAMA_MODEL="gpt-oss:120b" python3 llm/ollama_generate.py 5
+```
+
+自动选题按每批 5 篇执行。生成脚本固定 `think="high"`；正文生成使用 `temperature=0.1`，自动选题使用 `temperature=0.7`。如果某批选题或某篇文章连续 3 次失败，脚本会非 0 退出，并保留已经成功生成的文件。
+
 ## 常用命令
 
 | 命令 | 作用 |
@@ -67,11 +101,6 @@ pnpm dev
 - 页面公共结构放在 `src/layouts/BaseLayout.astro`。
 - 可复用 UI 放在 `src/components/`。
 - 浏览器交互逻辑放在 `src/scripts/interactions.ts`。
-- 新增文章前先运行 `python3 llm/ollama_list.py`，避免重复选题。
-- 新增 1 篇指定题目时运行 `python3 llm/ollama_generate.py "Topic"`，自动生成下一个 `src/data/articles/000NN_slug.ts` 文件。
-- 新增多篇时运行 `python3 llm/ollama_generate.py 12` 或 `python3 llm/ollama_generate.py --count 12`，脚本会按每批 5 篇自动选题和生成，再逐篇自动加五位编号。
-- 生成脚本使用 Ollama GPT-OSS 120B，固定 `think="high"`；正文生成 `temperature=0.1`，自动选题 `temperature=0.7`。
-- 如果某批选题或某篇文章连续 3 次失败，脚本会非 0 退出，并保留已经成功生成的文件。
 - GPT-OSS 120B 文档标注的知识截止时间是 2024-06-01，事实类故事应只写该日期前可确认的信息。
 
 ## 内容说明
