@@ -4,6 +4,8 @@ An Astro v2 reading-practice site for learning English through real biographies,
 
 中文说明见 [README.zh.md](./README.zh.md)。
 
+Repository: <https://github.com/billzi2016/english-reading-practice>
+
 ## Project Structure
 
 This project keeps content, rendering, and browser interactions separated so it stays easy to maintain:

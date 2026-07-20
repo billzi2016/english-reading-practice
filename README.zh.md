@@ -4,6 +4,8 @@
 
 英文说明见 [README.md](./README.md)。
 
+项目仓库：<https://github.com/billzi2016/english-reading-practice>
+
 ## 项目结构
 
 项目把内容数据、页面渲染、浏览器交互分开维护，减少重复代码：
