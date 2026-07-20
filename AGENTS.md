@@ -116,3 +116,11 @@ pnpm dev
 ```
 
 如果端口被占用，使用 Astro 输出的实际地址。不要把本机绝对路径写入文档。
+
+## 最终验证
+
+- 每次修改后必须用 `pnpm` 验证，确保写法正确。
+- 至少运行 `pnpm build`，确认 Astro、TypeScript、Tailwind 和 GitHub Pages base path 都能正常构建。
+- 如果改了依赖或 lockfile，先运行 `pnpm install --frozen-lockfile` 检查依赖一致性。
+- 构建失败时禁止提交；必须先修到 `pnpm build` 通过。
+- 最终回复必须明确说明是否运行了 `pnpm build` 以及结果。
