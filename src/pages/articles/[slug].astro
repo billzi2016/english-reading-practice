@@ -1,0 +1,154 @@
+---
+/**
+ * 文件意图：文章详情动态路由，用一份模板渲染所有文章详情页。
+ *
+ * 维护重点：
+ *   - DRY：6 篇文章共享同一个模板，新增文章只改 articles.ts。
+ *   - getStaticPaths() 告诉 Astro 在构建时为每个 slug 生成静态页面。
+ *   - 正文使用 set:html 渲染，因为数据里已经嵌入词汇高亮 span；文章数据必须保持可信。
+ *
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryBadge from '../../components/CategoryBadge.astro';
+import DifficultyDots from '../../components/DifficultyDots.astro';
+import { articles } from '../../data/articles.ts';
+import '../../styles/global.css';
+
+export function getStaticPaths() {
+  // 将文章数据映射为 Astro 静态路径；props 直接传入文章对象，模板无需二次查找。
+  return articles.map(article => ({
+    params: { slug: article.slug },
+    props:  { article },
+  }));
+}
+
+const { article } = Astro.props;
+---
+
+<BaseLayout
+  title={`${article.title} — ${article.subtitle} | English Reading`}
+  description={article.summary}
+>
+  <!-- Reading Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
+    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+
+      <a href="/" class="flex items-center gap-2 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to Library
+      </a>
+
+      <div class="flex items-center gap-3">
+        <span class="text-xs text-slate-400 dark:text-slate-500" id="reading-time">Loading…</span>
+        <button
+          id="theme-toggle"
+          class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 hover:scale-110 transition-transform flex items-center justify-center text-base"
+          title="Toggle light / dark"
+        >
+          <span id="theme-icon">🌙</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ── Article ────────────────────────────────────────────────────────── -->
+  <article class="max-w-3xl mx-auto px-6 py-12">
+
+    <!-- Meta -->
+    <div class="mb-8 fade-in">
+      <div class="flex items-center gap-3 mb-4">
+        <CategoryBadge category={article.category} />
+        <span class="text-xs text-slate-400 dark:text-slate-500 font-mono">Article {article.id}</span>
+        <span class="text-xs text-slate-600">·</span>
+        <DifficultyDots difficulty={article.difficulty} />
+      </div>
+
+      <h1 class="text-4xl font-bold text-slate-800 dark:text-white leading-tight mb-4">
+        {article.title}<br />
+        <span class="text-2xl font-normal text-slate-500 dark:text-slate-400">{article.subtitle}</span>
+      </h1>
+
+      {article.subtitle2 && (
+        <p class="text-sm text-slate-500 dark:text-slate-400">{article.subtitle2}</p>
+      )}
+    </div>
+
+    <!-- Tip Box -->
+    {article.tip && (
+      <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700/40 rounded-xl p-4 mb-10 text-sm text-amber-700 dark:text-amber-300 fade-in">
+        💡 <strong>Reading Tip:</strong> <span set:html={article.tip} />
+      </div>
+    )}
+
+    <!-- Article Body -->
+    <div class="article-body fade-in">
+      <!-- paragraph 已包含受控的 vocab span，因此这里使用 set:html 保留高亮结构。 -->
+      {article.paragraphs.map(paragraph => (
+        <p set:html={paragraph} />
+      ))}
+    </div>
+
+    <!-- Vocab Summary -->
+    {article.vocabulary.length > 0 && (
+      <div class="mt-12 p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl">
+        <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-wider">📖 Key Vocabulary</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {article.vocabulary.map((entry, i) => (
+            <div class={`flex justify-between items-center pb-2 ${i < article.vocabulary.length - 1 ? 'border-b border-slate-100 dark:border-slate-700' : ''}`}>
+              <span class="text-amber-500 dark:text-amber-400 text-sm font-medium italic">{entry.word}</span>
+              <span class="text-slate-500 dark:text-slate-400 text-sm">{entry.cn}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Navigation -->
+    <div class="mt-10 flex justify-between items-center">
+      {article.prevSlug ? (
+        <a
+          href={`/articles/${article.prevSlug}`}
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          {article.prevTitle}
+        </a>
+      ) : (
+        <span class="text-sm text-slate-400 dark:text-slate-600">← First article</span>
+      )}
+
+      {article.nextSlug ? (
+        <a
+          href={`/articles/${article.nextSlug}`}
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm bg-blue-600 text-white hover:bg-blue-500 transition-colors"
+        >
+          Next: {article.nextTitle}
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      ) : (
+        <span class="text-sm text-slate-400 dark:text-slate-600">Last article →</span>
+      )}
+    </div>
+
+  </article>
+
+  <script>
+    import { initThemeToggle, initProgressBar, initReadingTime } from '../../scripts/interactions.ts';
+    // 详情页交互依赖 DOM 节点，等待内容加载后再初始化主题、进度条和阅读时间。
+    document.addEventListener('DOMContentLoaded', () => {
+      initThemeToggle();
+      initProgressBar();
+      initReadingTime();
+    });
+  </script>
+</BaseLayout>

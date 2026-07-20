@@ -1,0 +1,111 @@
+---
+/**
+ * 文件意图：首页入口，负责展示文章库、搜索框和分类筛选控件。
+ *
+ * 维护重点：
+ *   - 首页只消费 articles 数据，不在页面内重复定义文章内容。
+ *   - 搜索/筛选的具体行为交给 interactions.ts，页面只提供稳定的 DOM id 和 data 属性。
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { articles } from '../data/articles.ts';
+import '../styles/global.css';
+
+const totalArticles = articles.length;
+---
+
+<BaseLayout
+  title="English Reading Practice — 英语阅读练习"
+  description="Improve your English through real stories — biographies, technology, and history. Difficult words are translated into Chinese."
+>
+  <!-- ── Header ───────────────────────────────────────────────────────────── -->
+  <header class="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-sm font-bold text-white">E</div>
+        <div>
+          <p class="text-sm font-semibold text-slate-800 dark:text-white leading-none">English Reading</p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 leading-none mt-0.5">英语阅读练习</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <span class="text-xs text-slate-400 dark:text-slate-500 hidden sm:block">
+          {totalArticles} articles · 单词后括号内为中文翻译
+        </span>
+        <button
+          id="theme-toggle"
+          class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 hover:scale-110 transition-transform flex items-center justify-center text-lg"
+          title="Toggle light / dark"
+        >
+          <span id="theme-icon">🌙</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+  <section class="max-w-6xl mx-auto px-6 pt-14 pb-10">
+    <div class="fade-in">
+      <p class="text-xs font-semibold tracking-widest text-blue-500 dark:text-blue-400 uppercase mb-3">Your Reading Library</p>
+      <h1 class="text-4xl font-bold text-slate-800 dark:text-white leading-tight mb-4">
+        Read Real Stories.<br />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-violet-500">Grow Your English.</span>
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 max-w-xl text-base leading-relaxed">
+        Each article is based on real people, real technology, and real history.
+        Difficult words are <span class="vocab" data-cn="高亮显示">highlighted</span> —
+        the Chinese translation appears right after the word.
+      </p>
+    </div>
+
+    <!-- 搜索和分类筛选：id/data-filter 是 interactions.ts 的稳定挂载点。 -->
+    <div class="mt-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search articles…"
+        class="w-full sm:w-72 px-4 py-2.5 text-sm rounded-xl border
+               bg-white dark:bg-slate-800
+               border-slate-200 dark:border-slate-700
+               text-slate-700 dark:text-slate-200
+               placeholder-slate-400 dark:placeholder-slate-500
+               focus:outline-none focus:ring-2 focus:ring-blue-500
+               transition-colors"
+      />
+
+      <div class="flex gap-2 flex-wrap text-xs font-semibold">
+        <button data-filter="all"        class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors">All</button>
+        <button data-filter="biography"  class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">👤 Biography</button>
+        <button data-filter="technology" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">⚙️ Technology</button>
+        <button data-filter="history"    class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">📜 History</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Cards Grid ────────────────────────────────────────────────────────── -->
+  <main class="max-w-6xl mx-auto px-6 pb-20">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 stagger">
+      {articles.map(article => (
+        <ArticleCard article={article} />
+      ))}
+    </div>
+  </main>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────────── -->
+  <footer class="border-t border-slate-200 dark:border-slate-800 py-8 text-center text-xs text-slate-400 dark:text-slate-600">
+    Built for personal English reading practice · 括号内为中文翻译
+  </footer>
+
+  <script>
+    import { initThemeToggle, initFilter, initSearch } from '../scripts/interactions.ts';
+    // DOMContentLoaded 后再初始化，确保按钮、输入框和卡片节点都已经存在。
+    document.addEventListener('DOMContentLoaded', () => {
+      initThemeToggle();
+      initFilter();
+      initSearch();
+    });
+  </script>
+</BaseLayout>

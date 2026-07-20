@@ -1,0 +1,47 @@
+---
+/**
+ * 文件意图：渲染首页文章卡片，把分类、难度、摘要等展示细节封装起来，首页只负责遍历数据。
+ *
+ * 维护重点：
+ *   - 只接收 ArticleMeta，说明卡片不依赖完整正文，降低组件耦合。
+ *   - data-category 供筛选脚本使用，不能随意删除。
+ */
+import type { ArticleMeta } from '../types/index.ts';
+import CategoryBadge from './CategoryBadge.astro';
+import DifficultyDots from './DifficultyDots.astro';
+
+interface Props {
+  article: ArticleMeta;
+}
+
+const { article } = Astro.props;
+---
+
+<!-- data-category 是筛选脚本的稳定接口；视觉结构调整时也要保留这个属性。 -->
+<a
+  href={`/articles/${article.slug}`}
+  data-category={article.category}
+  class="article-card rounded-2xl p-6 block group border
+         bg-white dark:bg-slate-800
+         border-slate-200 dark:border-slate-700
+         hover:border-blue-400 dark:hover:border-blue-500"
+>
+  <div class="flex items-start justify-between mb-4">
+    <CategoryBadge category={article.category} />
+    <span class="text-xs text-slate-400 dark:text-slate-500 font-mono">{article.id}</span>
+  </div>
+
+  <h2 class="text-base font-bold text-slate-800 dark:text-white mb-2
+             group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
+    {article.title}
+  </h2>
+
+  <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+    {article.summary}
+  </p>
+
+  <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+    <DifficultyDots difficulty={article.difficulty} />
+    <span>⏱ {article.readingMinutes} min</span>
+  </div>
+</a>

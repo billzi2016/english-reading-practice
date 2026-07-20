@@ -1,0 +1,34 @@
+---
+/**
+ * 文件意图：集中维护文章分类徽章的文案和颜色，让分类样式不散落在首页和详情页中。
+ *
+ * 维护重点：
+ *   - BADGE_STYLES 和 BADGE_LABELS 都使用 Record<Category, ...>，新增分类时 TypeScript 会提示补齐。
+ *   - 组件只关心展示，不读取文章数据，保持职责单一。
+ */
+import type { Category } from '../types/index.ts';
+
+interface Props {
+  category: Category;
+}
+
+const { category } = Astro.props;
+
+// 分类到样式的映射表：用数据驱动 UI，避免在模板里写多层 if/else。
+const BADGE_STYLES: Record<Category, string> = {
+  biography:  'bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-300',
+  technology: 'bg-cyan-100 dark:bg-cyan-900/50 text-cyan-600 dark:text-cyan-300',
+  history:    'bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-300',
+};
+
+// 分类到展示文案的映射表：和颜色映射拆开，后续改文案不会影响样式。
+const BADGE_LABELS: Record<Category, string> = {
+  biography:  '👤 Bio',
+  technology: '⚙️ Tech',
+  history:    '📜 History',
+};
+---
+
+<span class={`text-xs font-semibold px-2.5 py-1 rounded-full ${BADGE_STYLES[category]}`}>
+  {BADGE_LABELS[category]}
+</span>

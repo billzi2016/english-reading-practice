@@ -1,0 +1,40 @@
+---
+/**
+ * 文件意图：渲染文章难度指示器，把难度等级和点数/颜色/文案的关系集中在一个组件里。
+ *
+ * 维护重点：
+ *   - 调用方只传 difficulty，不需要知道具体点数和颜色。
+ *   - 配置表使用 Record<Difficulty, DifficultyConfig>，新增难度时会强制补齐配置。
+ */
+import type { Difficulty } from '../types/index.ts';
+
+interface Props {
+  difficulty: Difficulty;
+}
+
+const { difficulty } = Astro.props;
+
+// 单个难度等级的渲染配置；label 用于用户可见文本，filledCount 用于点数展示。
+interface DifficultyConfig {
+  filledCount: number;
+  color: string;
+  label: string;
+}
+
+// 难度映射集中在这里，避免多个页面各自判断 beginner/intermediate/advanced。
+const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
+  beginner:     { filledCount: 1, color: 'bg-green-400',  label: 'Beginner'     },
+  intermediate: { filledCount: 2, color: 'bg-green-500',  label: 'Intermediate' },
+  advanced:     { filledCount: 3, color: 'bg-yellow-500', label: 'Advanced'     },
+};
+
+const config = DIFFICULTY_CONFIG[difficulty];
+const TOTAL_DOTS = 3;
+---
+
+<div class="flex gap-1 items-center">
+  {Array.from({ length: TOTAL_DOTS }, (_, i) => (
+    <span class={`dot ${i < config.filledCount ? config.color : 'bg-slate-300 dark:bg-slate-600'}`}></span>
+  ))}
+  <span class="ml-1">{config.label}</span>
+</div>
