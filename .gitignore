@@ -31,5 +31,9 @@ pnpm-debug.log*
 .cache/
 .turbo/
 
+# Python cache files
+__pycache__/
+*.py[cod]
+
 # jetbrains setting folder
 .idea/

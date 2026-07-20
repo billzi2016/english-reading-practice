@@ -4,13 +4,13 @@
 /* Tailwind v4 默认 dark 变体不等同于 class 模式；这里显式声明由 html.dark 驱动，保证主题按钮能切换全站颜色。 */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+/* ─── Design Tokens：新主题、新配色、新阅读强调色优先改这里。 ───────────── */
 :root {
   /* 字体由 BaseLayout 的 <link rel="stylesheet"> 加载；这里仅保留字体栈，避免 CSS @import 顺序警告。 */
   --font-body: 'Merriweather', Georgia, serif;
   --font-ui:   'Inter', system-ui, sans-serif;
 
-  /* 浅色模式护眼色板：集中覆盖 Tailwind 默认白/灰底，避免在组件里到处改颜色类。 */
+  /* 浅色模式护眼色板：低饱和、低锐度，集中覆盖 Tailwind 默认白/灰底。 */
   --light-page-bg: #e3ecdd;
   --light-surface-bg: #eef4ea;
   --light-muted-bg: #d9e4d3;
@@ -18,8 +18,31 @@
   --light-text-strong: #3f4e44;
   --light-text-body: #526157;
   --light-text-muted: #5f6d63;
-  --light-vocab: #8a5c25;
-  --light-vocab-border: #b88a45;
+  --light-accent: #4f7f94;
+
+  /* 可复用效果 token：组件只挂 class，具体质感在这里收口。 */
+  --card-shadow-hover: 0 12px 40px rgb(0 0 0 / 0.25);
+  --progress-gradient: linear-gradient(90deg, #60a5fa, #a78bfa);
+  --scrollbar-thumb: #475569;
+
+  /* 阅读辅助块：提示框要像正文旁注，不要像高亮警告。 */
+  --tip-bg: #f2eedf;
+  --tip-border: #d7c88a;
+  --tip-text: #7a4f20;
+
+  /* 词汇高亮色：正文 span.vocab 和中文括注共用，避免每篇文章内写样式。 */
+  --vocab-text: #7c4f1f;
+  --vocab-border: #b88a45;
+  --vocab-translation: #46584d;
+}
+
+:root.dark {
+  --vocab-text: #ffd36f;
+  --vocab-border: #e2aa4a;
+  --vocab-translation: #d2ded6;
+  --tip-bg: rgb(69 50 26 / 0.42);
+  --tip-border: rgb(180 132 54 / 0.42);
+  --tip-text: #e6c382;
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────────── */
@@ -33,7 +56,7 @@ body {
   font-family: var(--font-ui);
 }
 
-/* ─── Light Theme Comfort Overrides ─────────────────────────────────────────
+/* ─── Light Theme Comfort Overrides ────────────────────────────────────────
    只影响浅色模式；深色模式仍由 dark:* utility 控制。
    这些覆盖把原本偏刺眼的白色/冷灰背景换成低饱和护眼绿色。
    ─────────────────────────────────────────────────────────────────────────── */
@@ -68,17 +91,23 @@ body {
   color: var(--light-text-muted);
 }
 
-:root:not(.dark) .text-blue-500,
-:root:not(.dark) .group-hover\:text-blue-500:hover {
-  color: #4f7f94;
+:root:not(.dark) :where(.text-blue-500, .group-hover\:text-blue-500:hover) {
+  color: var(--light-accent);
+}
+
+/* ─── Reading Tip：文章提示框唯一语义样式；不要在页面里继续堆 amber 类。 ─ */
+.reading-tip {
+  background-color: var(--tip-bg);
+  border: 1px solid var(--tip-border);
+  color: var(--tip-text);
 }
 
 /* ─── Vocab Highlight ────────────────────────────────────────────────────────
    Single definition used everywhere — inline spans in article paragraphs.
    ─────────────────────────────────────────────────────────────────────────── */
 .vocab {
-  color: var(--light-vocab);
-  border-bottom: 2px dashed var(--light-vocab-border);
+  color: var(--vocab-text);
+  border-bottom: 2px dashed var(--vocab-border);
   padding: 0 2px;
   border-radius: 2px;
   font-style: italic;
@@ -90,9 +119,13 @@ body {
   font-style: normal;
   font-size: 1em;
   line-height: inherit;
-  color: var(--light-text-body);
+  color: var(--vocab-translation);
   font-family: var(--font-ui);
   letter-spacing: 0;
+}
+
+.vocab-word {
+  color: var(--vocab-text);
 }
 
 /* ─── Article Body ───────────────────────────────────────────────────────────
@@ -115,7 +148,7 @@ body {
   top: 0;
   left: 0;
   height: 3px;
-  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  background: var(--progress-gradient);
   transition: width 0.1s linear;
   z-index: 1000;
   width: 0%;
@@ -130,7 +163,7 @@ body {
 
 .article-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--card-shadow-hover);
 }
 
 /* ─── Difficulty Dot ─────────────────────────────────────────────────────────
@@ -162,4 +195,4 @@ body {
 /* ─── Scrollbar ──────────────────────────────────────────────────────────────*/
 ::-webkit-scrollbar       { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }

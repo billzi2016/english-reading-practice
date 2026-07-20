@@ -19,6 +19,7 @@
 │   ├── components/
 │   ├── config/
 │   ├── data/
+│   │   └── articles/
 │   ├── layouts/
 │   ├── pages/
 │   ├── scripts/
@@ -28,7 +29,7 @@
 └── package.json
 ```
 
-`src/data/articles.ts` 是文章元数据和正文内容的唯一数据源。动态路由 `src/pages/articles/[slug].astro` 会根据这些数据生成所有文章页。分类和难度展示规则放在 `src/config/`；路由和文章导航派生逻辑放在 `src/utils/`。
+`src/data/articles.ts` 是自动文章索引入口。它通过 `import.meta.glob` 读取 `src/data/articles/` 下的所有文章模块，并按 `00001_ada-lovelace.ts` 这种五位编号文件名前缀排序。动态路由 `src/pages/articles/[slug].astro` 会根据这些数据生成所有文章页。分类和难度展示规则放在 `src/config/`；路由和文章导航派生逻辑放在 `src/utils/`。
 
 ## 启动方法
 
@@ -50,11 +51,15 @@ pnpm dev
 | `pnpm dev` | 启动本地开发服务器 |
 | `pnpm build` | 构建生产版本到 `./dist/` |
 | `pnpm preview` | 本地预览生产构建 |
+| `python3 llm/ollama_list.py` | 列出当前所有文章题目 |
+| `python3 llm/ollama_generate.py "Topic"` | 用 Ollama 生成 1 篇指定题目的编号文章 |
+| `python3 llm/ollama_generate.py 3` | 让 Ollama 自动想 3 个新题目，并生成 3 篇连续编号文章 |
 
 ## 维护原则
 
 - 每次改动尽量少碰文件：能改数据/配置/工具函数，就不要改页面或组件。
-- 新增文章只改 `src/data/articles.ts`。
+- 新增文章只在 `src/data/articles/` 下创建一个 `000NN_slug.ts` 文件。
+- 不要为了新增文章修改 `src/data/articles.ts`；它是自动索引入口。
 - 不要手写上一篇/下一篇链接；导航由文章数组顺序自动生成。
 - 分类和难度文案/样式只改 `src/config/`；分类可以扩展，不需要改页面。
 - 站内链接只通过 `src/utils/routes.ts` 生成。
@@ -62,6 +67,11 @@ pnpm dev
 - 页面公共结构放在 `src/layouts/BaseLayout.astro`。
 - 可复用 UI 放在 `src/components/`。
 - 浏览器交互逻辑放在 `src/scripts/interactions.ts`。
+- 新增文章前先运行 `python3 llm/ollama_list.py`，避免重复选题。
+- 新增 1 篇指定题目时运行 `python3 llm/ollama_generate.py "Topic"`，自动生成下一个 `src/data/articles/000NN_slug.ts` 文件。
+- 新增多篇时运行 `python3 llm/ollama_generate.py 3` 或 `python3 llm/ollama_generate.py --count 3`，脚本会先让模型想题目，再逐篇自动加五位编号。
+- 生成脚本使用 Ollama GPT-OSS 120B，固定 `think="high"` 和 `temperature=0.1`；运行前需要先安装 Python 包：`pip install ollama`。
+- GPT-OSS 120B 文档标注的知识截止时间是 2024-06-01，事实类故事应只写该日期前可确认的信息。
 
 ## 内容说明
 

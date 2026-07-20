@@ -19,6 +19,7 @@ This project keeps content, rendering, and browser interactions separated so it 
 │   ├── components/
 │   ├── config/
 │   ├── data/
+│   │   └── articles/
 │   ├── layouts/
 │   ├── pages/
 │   ├── scripts/
@@ -28,7 +29,7 @@ This project keeps content, rendering, and browser interactions separated so it 
 └── package.json
 ```
 
-`src/data/articles.ts` is the single source of truth for article metadata and article body content. The dynamic route `src/pages/articles/[slug].astro` renders all article pages from that shared data. Category and difficulty display rules live in `src/config/`; route and article navigation helpers live in `src/utils/`.
+`src/data/articles.ts` is the automatic article registry. It uses `import.meta.glob` to load every article module in `src/data/articles/`, then sorts them by the five-digit filename prefix such as `00001_ada-lovelace.ts`. The dynamic route `src/pages/articles/[slug].astro` renders all article pages from that shared data. Category and difficulty display rules live in `src/config/`; route and article navigation helpers live in `src/utils/`.
 
 ## Commands
 
@@ -40,6 +41,9 @@ Run all commands from this project root:
 | `pnpm dev` | Start the local development server |
 | `pnpm build` | Build the production site into `./dist/` |
 | `pnpm preview` | Preview the production build locally |
+| `python3 llm/ollama_list.py` | List existing article topics |
+| `python3 llm/ollama_generate.py "Topic"` | Generate one numbered article with Ollama |
+| `python3 llm/ollama_generate.py 3` | Ask Ollama for 3 new topics, then generate 3 numbered articles |
 
 ## Local Development
 
@@ -54,7 +58,8 @@ Astro prints the actual local URL after startup. In the latest run it used `http
 ## Maintenance Notes
 
 - Keep each change as small as possible: prefer data/config/utils changes over page or component edits.
-- Add new articles only in `src/data/articles.ts`.
+- Add a new article by creating one file in `src/data/articles/` named `000NN_slug.ts`.
+- Do not edit `src/data/articles.ts` when adding articles; it is an automatic registry.
 - Do not hand-write previous/next article links; navigation is derived from article order.
 - Keep category and difficulty labels/styles in `src/config/`; categories are extensible without editing pages.
 - Keep site URL generation in `src/utils/routes.ts`.
@@ -62,6 +67,11 @@ Astro prints the actual local URL after startup. In the latest run it used `http
 - Keep shared page structure in `src/layouts/BaseLayout.astro`.
 - Keep reusable UI in `src/components/`.
 - Keep browser-only behavior in `src/scripts/interactions.ts`.
+- Use `python3 llm/ollama_list.py` before generating a new article to avoid duplicate topics.
+- Use `python3 llm/ollama_generate.py "Topic"` to create one `src/data/articles/000NN_slug.ts` file automatically.
+- Use `python3 llm/ollama_generate.py 3` or `python3 llm/ollama_generate.py --count 3` to let Ollama propose topics and generate multiple consecutive article files.
+- The generator uses Ollama GPT-OSS 120B with `think="high"` and `temperature=0.1`; install the Python package with `pip install ollama` before running it.
+- GPT-OSS 120B's documented knowledge cutoff is 2024-06-01, so generated factual stories should stay within information knowable before that date.
 
 ## Content Notice
 

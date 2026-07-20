@@ -23,10 +23,11 @@
 - 生产站点部署到 GitHub Pages：`https://billzi2016.github.io/english-reading-practice/`。
 - GitHub Pages 是项目子路径部署，站内链接必须兼容 `/english-reading-practice/`。
 - 每次维护必须优先减少触碰面：能只改 1 个文件就不要改 2 个文件，能改数据/配置就不要改页面/组件。
+- 新增文章优先使用 `llm/` 下的脚本自动生成，后续 AI 不要手工复制旧文章模板。
 
 ## 最小触碰原则
 
-- 新增文章：只改 `src/data/articles.ts`。
+- 新增文章：只新增一个 `src/data/articles/000NN_slug.ts` 文件。
 - 新增分类：只改 `src/types/index.ts` 和 `src/config/categories.ts`；不要改首页或徽章组件。
 - 新增难度：只改 `src/types/index.ts` 和 `src/config/difficulties.ts`。
 - 改站内链接规则：只改 `src/utils/routes.ts`。
@@ -39,7 +40,7 @@
 
 ## 绝对禁止
 
-- 禁止在代码、README、PRD、配置中写本机绝对路径，例如 `/Users/...`。
+- 禁止在代码、README、PRD、配置中写本机用户目录绝对路径。
 - 禁止手写 `/articles/...`、`/` 这类站内根路径链接；必须使用 `src/utils/routes.ts` 的 `sitePath()`。
 - 禁止新增每篇文章独立 HTML 文件；所有文章页必须走 `src/pages/articles/[slug].astro`。
 - 禁止在 `src/data/articles.ts` 手写上一篇/下一篇字段；导航由 `src/utils/articles.ts` 自动派生。
@@ -55,7 +56,8 @@
 
 ## 必须遵守的目录职责
 
-- `src/data/articles.ts`：唯一文章数据源，只维护文章内容和元数据。
+- `src/data/articles.ts`：自动文章索引入口，只负责汇总文章模块，禁止手写文章内容或 import 清单。
+- `src/data/articles/`：每篇文章一个文件，文件名必须是 `000NN_slug.ts`，五位编号负责显示顺序。
 - `src/pages/articles/[slug].astro`：唯一文章详情模板。
 - `src/pages/index.astro`：首页组合层，只消费数据、组件和配置。
 - `src/components/`：可复用 UI 组件，不放业务数据。
@@ -65,14 +67,23 @@
 - `src/styles/global.css`：全站样式入口、字体、词汇高亮、动效和视觉缩放。
 - `specs/PRD.v1.md`：旧静态版 PRD 归档，除非用户明确要求，否则不要改。
 - `specs/PRD.v2.md`：当前 Astro v2 产品和架构基线，只有架构/产品范围变化时才改。
+- `llm/ollama_article_utils.py`：Ollama 文章脚本共享工具，维护编号、slug、扫描和校验规则。
+- `llm/ollama_list.py`：只读列出现有文章题目，新增文章前必须先运行。
+- `llm/ollama_generate.py`：用 Ollama GPT-OSS 120B 生成一篇或多篇编号文章，写入前必须通过内置校验。
 
 ## 新增文章流程
 
-- 只修改 `src/data/articles.ts`。
-- 追加一个新的 `Article` 对象。
-- `slug` 必须唯一且稳定。
-- 不要写 `prevSlug`、`nextSlug`、`prevTitle`、`nextTitle`。
-- 不要修改 PRD。
+- 先运行 `python3 llm/ollama_list.py`，确认现有题目，避免重复。
+- 新增 1 篇指定题目时，运行 `python3 llm/ollama_generate.py "Topic"`，让脚本自动生成下一个 `src/data/articles/000NN_slug.ts`。
+- 新增多篇时，运行 `python3 llm/ollama_generate.py 3` 或 `python3 llm/ollama_generate.py --count 3`；脚本会先让模型生成不重复题目，再逐篇自动加连续五位编号。
+- 自动选题会把现有标题传给模型，并用 slug 做硬性去重；语义相近但标题不同的重复，生成后仍要人工快速扫一眼。
+- 生成脚本固定使用 Ollama Python 库、GPT-OSS 120B、`think="high"`、`temperature=0.1`；除非用户明确要求，不要改这些默认值。
+- GPT-OSS 120B 的知识截止时间按文档写死为 `2024-06-01`；事实类选题只写该日期前可确认的信息。
+- 如果必须手工新增，只新增一个 `src/data/articles/000NN_slug.ts` 文件，文件名必须使用连续五位编号加稳定 slug，例如 `00011_new-topic.ts`。
+- 手工文件内必须 `import type { Article } from '../../types/index.ts';`，定义 `const article: Article = {...}`，并 `export default article;`。
+- `id` 必须和文件名前缀一致，统一使用五位编号，例如 `00011`；`slug` 必须唯一且稳定。
+- 不要修改 `src/data/articles.ts`，它会自动读取文章文件。
+- 不要写 `prevSlug`、`nextSlug`、`prevTitle`、`nextTitle`；不要修改 PRD。
 - 修改后运行 `pnpm build`。
 
 ## 新增分类流程

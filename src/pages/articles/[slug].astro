@@ -3,7 +3,7 @@
  * 文件意图：文章详情动态路由，用一份模板渲染所有文章详情页。
  *
  * 维护重点：
- *   - DRY：6 篇文章共享同一个模板，新增文章只改 articles.ts。
+ *   - DRY：所有文章共享同一个模板，新增文章只添加 src/data/articles/ 下的编号文章模块。
  *   - getStaticPaths() 告诉 Astro 在构建时为每个 slug 生成静态页面。
  *   - 正文使用 set:html 渲染，因为数据里已经嵌入词汇高亮 span；文章数据必须保持可信。
  *
@@ -77,9 +77,9 @@ const navigation = getArticleNavigation(articles, article);
       )}
     </div>
 
-    <!-- Tip Box -->
+    <!-- Tip Box：视觉颜色由 .reading-tip token 控制，避免页面里散落 amber 色值。 -->
     {article.tip && (
-      <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700/40 rounded-xl p-4 mb-10 text-sm text-amber-700 dark:text-amber-300 fade-in">
+      <div class="reading-tip rounded-xl p-4 mb-10 text-sm fade-in">
         💡 <strong>Reading Tip:</strong> <span set:html={article.tip} />
       </div>
     )}
@@ -99,7 +99,7 @@ const navigation = getArticleNavigation(articles, article);
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {article.vocabulary.map((entry, i) => (
             <div class={`flex justify-between items-center pb-2 ${i < article.vocabulary.length - 1 ? 'border-b border-slate-100 dark:border-slate-700' : ''}`}>
-              <span class="text-amber-500 dark:text-amber-400 text-sm font-medium italic">{entry.word}</span>
+              <span class="vocab-word text-sm font-medium italic">{entry.word}</span>
               <span class="text-slate-500 dark:text-slate-400 text-sm">{entry.cn}</span>
             </div>
           ))}
