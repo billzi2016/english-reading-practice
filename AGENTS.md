@@ -68,27 +68,29 @@
 
 ## 新增文章流程
 
-1. 只修改 `src/data/articles.ts`。
-2. 追加一个新的 `Article` 对象。
-3. `slug` 必须唯一且稳定。
-4. 不要维护 `prevSlug`、`nextSlug`、`prevTitle`、`nextTitle`。
-5. 不要修改 PRD。
-6. 运行 `pnpm build` 验证。
+- 只修改 `src/data/articles.ts`。
+- 追加一个新的 `Article` 对象。
+- `slug` 必须唯一且稳定。
+- 不要写 `prevSlug`、`nextSlug`、`prevTitle`、`nextTitle`。
+- 不要修改 PRD。
+- 修改后运行 `pnpm build`。
 
 ## 新增分类流程
 
-1. 修改 `src/types/index.ts` 的 `Category` 联合类型。
-2. 修改 `src/config/categories.ts` 补齐文案和样式。
-3. 不要修改 `CategoryBadge.astro` 或首页按钮结构，除非配置能力本身不够。
-4. 分类不限制为人物/技术/历史三类；需要新题材时按本流程扩展。
-5. 运行 `pnpm build` 验证 TypeScript 是否提示遗漏。
+- 只修改 `src/types/index.ts` 和 `src/config/categories.ts`。
+- 在 `Category` 联合类型中新增分类 key。
+- 在 `CATEGORY_CONFIG` 中补齐同名配置。
+- 不要修改 `CategoryBadge.astro`。
+- 不要修改 `src/pages/index.astro` 的筛选按钮结构。
+- 修改后运行 `pnpm build`。
 
 ## 新增难度流程
 
-1. 修改 `src/types/index.ts` 的 `Difficulty` 联合类型。
-2. 修改 `src/config/difficulties.ts` 补齐点数、颜色和文案。
-3. 不要修改 `DifficultyDots.astro`，除非渲染规则本身改变。
-4. 运行 `pnpm build` 验证。
+- 只修改 `src/types/index.ts` 和 `src/config/difficulties.ts`。
+- 在 `Difficulty` 联合类型中新增难度 key。
+- 在 `DIFFICULTY_CONFIG` 中补齐同名配置。
+- 不要修改 `DifficultyDots.astro`。
+- 修改后运行 `pnpm build`。
 
 ## 主题规则
 
