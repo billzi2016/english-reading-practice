@@ -11,15 +11,15 @@
   --font-ui:   'Inter', system-ui, sans-serif;
 
   /* 浅色模式护眼色板：集中覆盖 Tailwind 默认白/灰底，避免在组件里到处改颜色类。 */
-  --light-page-bg: #edf7ee;
-  --light-surface-bg: #f7fbf3;
-  --light-muted-bg: #e4f0e2;
-  --light-border: #cbdcc8;
-  --light-text-strong: #405247;
-  --light-text-body: #52665a;
-  --light-text-muted: #758479;
-  --light-vocab: #a66313;
-  --light-vocab-border: #d8ae55;
+  --light-page-bg: #e3ecdd;
+  --light-surface-bg: #eef4ea;
+  --light-muted-bg: #d9e4d3;
+  --light-border: #b7c7af;
+  --light-text-strong: #3f4e44;
+  --light-text-body: #526157;
+  --light-text-muted: #5f6d63;
+  --light-vocab: #8a5c25;
+  --light-vocab-border: #b88a45;
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────────── */
