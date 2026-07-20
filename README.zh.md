@@ -4,7 +4,7 @@
 
 英文说明见 [README.md](./README.md)。
 
-项目仓库：<https://github.com/billzi2016/english-reading-practice>
+网站地址：<https://billzi2016.github.io/english-reading-practice/>
 
 ## 项目结构
 
