@@ -53,7 +53,7 @@ pnpm dev
 | `pnpm preview` | 本地预览生产构建 |
 | `python3 llm/ollama_list.py` | 列出当前所有文章题目 |
 | `python3 llm/ollama_generate.py "Topic"` | 用 Ollama 生成 1 篇指定题目的编号文章 |
-| `python3 llm/ollama_generate.py 3` | 让 Ollama 自动想 3 个新题目，并生成 3 篇连续编号文章 |
+| `python3 llm/ollama_generate.py 3` | 让 Ollama 自动想题目，并生成 3 篇连续编号文章 |
 
 ## 维护原则
 
@@ -69,8 +69,9 @@ pnpm dev
 - 浏览器交互逻辑放在 `src/scripts/interactions.ts`。
 - 新增文章前先运行 `python3 llm/ollama_list.py`，避免重复选题。
 - 新增 1 篇指定题目时运行 `python3 llm/ollama_generate.py "Topic"`，自动生成下一个 `src/data/articles/000NN_slug.ts` 文件。
-- 新增多篇时运行 `python3 llm/ollama_generate.py 3` 或 `python3 llm/ollama_generate.py --count 3`，脚本会先让模型想题目，再逐篇自动加五位编号。
-- 生成脚本使用 Ollama GPT-OSS 120B，固定 `think="high"` 和 `temperature=0.1`；运行前需要先安装 Python 包：`pip install ollama`。
+- 新增多篇时运行 `python3 llm/ollama_generate.py 12` 或 `python3 llm/ollama_generate.py --count 12`，脚本会按每批 5 篇自动选题和生成，再逐篇自动加五位编号。
+- 生成脚本使用 Ollama GPT-OSS 120B，固定 `think="high"`；正文生成 `temperature=0.1`，自动选题 `temperature=0.7`。
+- 如果某批选题或某篇文章连续 3 次失败，脚本会非 0 退出，并保留已经成功生成的文件。
 - GPT-OSS 120B 文档标注的知识截止时间是 2024-06-01，事实类故事应只写该日期前可确认的信息。
 
 ## 内容说明

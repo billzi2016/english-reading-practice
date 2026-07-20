@@ -17,14 +17,17 @@ import sys
 from ollama import chat
 
 from ollama_article_utils import (
-    PROJECT_ROOT, apply_article_identity, read_article_files, next_article_identity,
-    slugify, strip_markdown_fence, validate_article_source,
+    PROJECT_ROOT, apply_article_identity, next_article_identity,
+    parse_topics, strip_markdown_fence, validate_article_source,
 )
 from ollama_prompts import KNOWLEDGE_CUTOFF, SYSTEM_PROMPT, TOPIC_SYSTEM_PROMPT
 
 
 DEFAULT_MODEL = "gpt-oss:120b"
 MAX_RETRIES = 3
+AUTO_TOPIC_BATCH_SIZE = 5
+TOPIC_TEMPERATURE = 0.7
+ARTICLE_TEMPERATURE = 0.1
 
 
 def retry(label: str, action):
@@ -48,6 +51,8 @@ def build_user_prompt(topic: str) -> str:
 
 def build_topic_prompt(count: int) -> str:
     """生成短 user prompt；已有题目作为输入数据，长规则仍在 system prompt。"""
+    from ollama_article_utils import read_article_files
+
     existing_topics = [article.title for article in read_article_files()]
     return json.dumps(
         {
@@ -69,41 +74,11 @@ def generate_topics(count: int, model: str) -> list[str]:
             ],
             think="high",
             stream=False,
-            options={"temperature": 0.1},
+            options={"temperature": TOPIC_TEMPERATURE},
         )
         return parse_topics(strip_markdown_fence(response.message.content), count)
 
     return retry("自动选题", action)
-
-
-def parse_topics(raw_content: str, count: int) -> list[str]:
-    """解析并过滤模型返回的选题 JSON。"""
-    try:
-        topics = json.loads(raw_content)
-    except json.JSONDecodeError as error:
-        raise ValueError(f"选题结果不是合法 JSON：{error}") from error
-
-    if not isinstance(topics, list) or not all(isinstance(topic, str) for topic in topics):
-        raise ValueError("选题结果必须是字符串数组。")
-
-    existing_slugs = {article.slug for article in read_article_files()}
-    unique_topics: list[str] = []
-    seen_slugs: set[str] = set()
-
-    for topic in topics:
-        clean_topic = topic.strip()
-        if not clean_topic:
-            continue
-        slug = slugify(clean_topic)
-        if slug in existing_slugs or slug in seen_slugs:
-            continue
-        seen_slugs.add(slug)
-        unique_topics.append(clean_topic)
-
-    if len(unique_topics) < count:
-        raise ValueError(f"模型只给出 {len(unique_topics)} 个可用新题目，少于要求的 {count} 个。")
-
-    return unique_topics[:count]
 
 
 def generate_article(topic: str, model: str) -> str:
@@ -116,7 +91,7 @@ def generate_article(topic: str, model: str) -> str:
         ],
         think="high",
         stream=False,
-        options={"temperature": 0.1},
+        options={"temperature": ARTICLE_TEMPERATURE},
     )
     return response.message.content
 
@@ -135,25 +110,31 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def resolve_topics(args: argparse.Namespace) -> list[str]:
-    """把命令行输入转换成待生成题目列表。"""
+def resolve_manual_topics(args: argparse.Namespace) -> list[str] | None:
+    """有明确题目时直接返回题目；数量模式返回 None。"""
+    if args.count is not None or (len(args.topics) == 1 and args.topics[0].isdigit()):
+        return None
+    if not args.topics:
+        raise ValueError('请传入题目，例如 python3 llm/ollama_generate.py "Ada Lovelace"，或传入数量，例如 python3 llm/ollama_generate.py 3。')
+    return args.topics
+
+
+def resolve_auto_count(args: argparse.Namespace) -> int:
+    """读取自动生成数量；明确题目模式返回 0。"""
     if args.count is not None:
         if args.count < 1:
             raise ValueError("--count 必须大于 0。")
         if args.topics:
             raise ValueError("使用 --count 自动选题时，不要再传入具体题目。")
-        return generate_topics(args.count, args.model)
+        return args.count
 
     if len(args.topics) == 1 and args.topics[0].isdigit():
         count = int(args.topics[0])
         if count < 1:
             raise ValueError("生成数量必须大于 0。")
-        return generate_topics(count, args.model)
+        return count
 
-    if not args.topics:
-        raise ValueError('请传入题目，例如 python3 llm/ollama_generate.py "Ada Lovelace"，或传入数量，例如 python3 llm/ollama_generate.py 3。')
-
-    return args.topics
+    return 0
 
 
 def create_article(topic: str, model: str, dry_run: bool) -> None:
@@ -178,13 +159,27 @@ def create_article(topic: str, model: str, dry_run: bool) -> None:
     print(f"created {output_path.relative_to(PROJECT_ROOT)}")
 
 
+def create_auto_articles(total: int, model: str, dry_run: bool) -> None:
+    """按每批 5 个题目自动生成；某篇 3 次失败后停止，保留已写入文件。"""
+    created = 0
+    while created < total:
+        batch_size = min(AUTO_TOPIC_BATCH_SIZE, total - created)
+        topics = generate_topics(batch_size, model)
+        for topic in topics:
+            create_article(topic, model, dry_run)
+            created += 1
+
+
 def main() -> int:
     """生成、校验并写入一篇或多篇连续编号文章。"""
     args = parse_args()
     try:
-        topics = resolve_topics(args)
-        for topic in topics:
-            create_article(topic, args.model, args.dry_run)
+        manual_topics = resolve_manual_topics(args)
+        if manual_topics is not None:
+            for topic in manual_topics:
+                create_article(topic, args.model, args.dry_run)
+        else:
+            create_auto_articles(resolve_auto_count(args), args.model, args.dry_run)
     except (FileExistsError, RuntimeError, ValueError) as error:
         print(error, file=sys.stderr)
         return 1

@@ -75,9 +75,10 @@
 
 - 先运行 `python3 llm/ollama_list.py`，确认现有题目，避免重复。
 - 新增 1 篇指定题目时，运行 `python3 llm/ollama_generate.py "Topic"`，让脚本自动生成下一个 `src/data/articles/000NN_slug.ts`。
-- 新增多篇时，运行 `python3 llm/ollama_generate.py 3` 或 `python3 llm/ollama_generate.py --count 3`；脚本会先让模型生成不重复题目，再逐篇自动加连续五位编号。
+- 新增多篇时，运行 `python3 llm/ollama_generate.py 12` 或 `python3 llm/ollama_generate.py --count 12`；脚本按每批 5 篇自动选题和生成，再逐篇自动加连续五位编号。
 - 自动选题会把现有标题传给模型，并用 slug 做硬性去重；语义相近但标题不同的重复，生成后仍要人工快速扫一眼。
-- 生成脚本固定使用 Ollama Python 库、GPT-OSS 120B、`think="high"`、`temperature=0.1`；除非用户明确要求，不要改这些默认值。
+- 生成脚本固定使用 Ollama Python 库、GPT-OSS 120B、`think="high"`；正文生成 `temperature=0.1`，自动选题 `temperature=0.7`，除非用户明确要求不要改默认值。
+- 如果某批选题或某篇文章连续 3 次失败，脚本必须非 0 退出并保留已经成功写入的文章文件，不要自动删除成果或跳过失败继续乱跑。
 - GPT-OSS 120B 的知识截止时间按文档写死为 `2024-06-01`；事实类选题只写该日期前可确认的信息。
 - 如果必须手工新增，只新增一个 `src/data/articles/000NN_slug.ts` 文件，文件名必须使用连续五位编号加稳定 slug，例如 `00011_new-topic.ts`。
 - 手工文件内必须 `import type { Article } from '../../types/index.ts';`，定义 `const article: Article = {...}`，并 `export default article;`。

@@ -41,6 +41,33 @@ SYSTEM_PROMPT = f"""你是英语阅读练习网站的文章生成器。
 维护目标：
 - 生成结果要能直接保存为 src/data/articles/000NN_slug.ts。
 - 新增文章不需要修改 src/data/articles.ts，因为项目会自动 import.meta.glob 读取。
+
+输出示例：
+import type {{ Article }} from '../../types/index.ts';
+
+// 文件意图：维护《__ARTICLE_TITLE__》这篇文章的完整内容，供文章自动索引入口读取。
+// 维护重点：只改本文内容；文章顺序由文件名前缀 __ARTICLE_ID__ 控制，不要手写上一篇/下一篇。
+const article: Article = {{
+  id: '__ARTICLE_ID__',
+  slug: '__ARTICLE_SLUG__',
+  title: '__ARTICLE_TITLE__',
+  subtitle: 'A Clear Learning Subtitle',
+  summary: 'One sentence summary for the article card.',
+  category: 'technology',
+  difficulty: 'intermediate',
+  readingMinutes: 5,
+  paragraphs: [
+    `Write a full paragraph with one <span class="vocab" data-cn="中文解释">highlighted term</span>.`,
+    `Write another full paragraph with another highlighted term.`,
+    `Continue until there are 6-8 substantial paragraphs.`,
+  ],
+  vocabulary: [
+    {{ word: 'highlighted term', cn: '中文解释' }},
+    {{ word: 'another term', cn: '另一个中文解释' }},
+  ],
+}};
+
+export default article;
 """
 
 TOPIC_SYSTEM_PROMPT = f"""你是英语阅读练习网站的选题编辑。

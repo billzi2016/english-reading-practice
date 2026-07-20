@@ -43,7 +43,7 @@ Run all commands from this project root:
 | `pnpm preview` | Preview the production build locally |
 | `python3 llm/ollama_list.py` | List existing article topics |
 | `python3 llm/ollama_generate.py "Topic"` | Generate one numbered article with Ollama |
-| `python3 llm/ollama_generate.py 3` | Ask Ollama for 3 new topics, then generate 3 numbered articles |
+| `python3 llm/ollama_generate.py 3` | Generate 3 articles from Ollama-proposed topics |
 
 ## Local Development
 
@@ -69,8 +69,9 @@ Astro prints the actual local URL after startup. In the latest run it used `http
 - Keep browser-only behavior in `src/scripts/interactions.ts`.
 - Use `python3 llm/ollama_list.py` before generating a new article to avoid duplicate topics.
 - Use `python3 llm/ollama_generate.py "Topic"` to create one `src/data/articles/000NN_slug.ts` file automatically.
-- Use `python3 llm/ollama_generate.py 3` or `python3 llm/ollama_generate.py --count 3` to let Ollama propose topics and generate multiple consecutive article files.
-- The generator uses Ollama GPT-OSS 120B with `think="high"` and `temperature=0.1`; install the Python package with `pip install ollama` before running it.
+- Use `python3 llm/ollama_generate.py 12` or `python3 llm/ollama_generate.py --count 12` to generate multiple articles; automatic topic selection runs in batches of 5.
+- The generator uses Ollama GPT-OSS 120B with `think="high"`; article writing uses `temperature=0.1`, while topic selection uses `temperature=0.7`.
+- If a topic batch or article fails 3 retries, the script exits non-zero and keeps already created files.
 - GPT-OSS 120B's documented knowledge cutoff is 2024-06-01, so generated factual stories should stay within information knowable before that date.
 
 ## Content Notice

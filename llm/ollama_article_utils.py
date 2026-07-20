@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import re
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -81,6 +82,36 @@ def strip_markdown_fence(content: str) -> str:
     text = content.strip()
     fence = re.fullmatch(r"```(?:ts|typescript)?\s*(.*?)\s*```", text, flags=re.S)
     return fence.group(1).strip() if fence else text
+
+
+def parse_topics(raw_content: str, count: int) -> list[str]:
+    """解析模型返回的选题 JSON，并过滤现有 slug 和批内重复。"""
+    try:
+        topics = json.loads(raw_content)
+    except json.JSONDecodeError as error:
+        raise ValueError(f"选题结果不是合法 JSON：{error}") from error
+
+    if not isinstance(topics, list) or not all(isinstance(topic, str) for topic in topics):
+        raise ValueError("选题结果必须是字符串数组。")
+
+    existing_slugs = {article.slug for article in read_article_files()}
+    unique_topics: list[str] = []
+    seen_slugs: set[str] = set()
+
+    for topic in topics:
+        clean_topic = topic.strip()
+        if not clean_topic:
+            continue
+        slug = slugify(clean_topic)
+        if slug in existing_slugs or slug in seen_slugs:
+            continue
+        seen_slugs.add(slug)
+        unique_topics.append(clean_topic)
+
+    if len(unique_topics) < count:
+        raise ValueError(f"模型只给出 {len(unique_topics)} 个可用新题目，少于要求的 {count} 个。")
+
+    return unique_topics[:count]
 
 
 def apply_article_identity(content: str, article_id: str, slug: str, title: str) -> str:
