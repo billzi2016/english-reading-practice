@@ -56,3 +56,7 @@ Astro prints the actual local URL after startup. In the latest run it used `http
 - Keep shared page structure in `src/layouts/BaseLayout.astro`.
 - Keep reusable UI in `src/components/`.
 - Keep browser-only behavior in `src/scripts/interactions.ts`.
+
+## Content Notice
+
+The reading articles are original AI-generated educational text. They are not copied, adapted, or rewritten from existing articles.

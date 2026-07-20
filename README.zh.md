@@ -56,3 +56,7 @@ pnpm dev
 - 页面公共结构放在 `src/layouts/BaseLayout.astro`。
 - 可复用 UI 放在 `src/components/`。
 - 浏览器交互逻辑放在 `src/scripts/interactions.ts`。
+
+## 内容说明
+
+阅读文章为 AI 原创生成的学习文本，不是从现有文章复制、改写或搬运而来。

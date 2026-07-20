@@ -15,11 +15,15 @@ interface Props {
 }
 
 const { article } = Astro.props;
+// GitHub Pages 项目站点有 base path；标准化尾斜杠，避免拼出 /repoarticles/...。
+const siteRoot = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
 ---
 
 <!-- data-category 是筛选脚本的稳定接口；视觉结构调整时也要保留这个属性。 -->
 <a
-  href={`/articles/${article.slug}`}
+  href={`${siteRoot}articles/${article.slug}`}
   data-category={article.category}
   class="article-card rounded-2xl p-6 block group border
          bg-white dark:bg-slate-800

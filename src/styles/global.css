@@ -1,6 +1,9 @@
 /* 本文件意图：集中维护全站视觉基础样式、阅读体验样式和可复用动效，避免样式散落在多个页面里重复定义。 */
 @import "tailwindcss";
 
+/* Tailwind v4 默认 dark 变体不等同于 class 模式；这里显式声明由 html.dark 驱动，保证主题按钮能切换全站颜色。 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ─── Design Tokens ─────────────────────────────────────────────────────────── */
 :root {
   /* 字体由 BaseLayout 的 <link rel="stylesheet"> 加载；这里仅保留字体栈，避免 CSS @import 顺序警告。 */

@@ -23,6 +23,10 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
+// GitHub Pages 项目站点有 base path；标准化尾斜杠，避免导航链接丢失 /english-reading-practice/ 前缀。
+const siteRoot = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
 ---
 
 <BaseLayout
@@ -36,7 +40,7 @@ const { article } = Astro.props;
   <header class="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
     <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
 
-      <a href="/" class="flex items-center gap-2 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors text-sm">
+      <a href={siteRoot} class="flex items-center gap-2 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors text-sm">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -113,7 +117,7 @@ const { article } = Astro.props;
     <div class="mt-10 flex justify-between items-center">
       {article.prevSlug ? (
         <a
-          href={`/articles/${article.prevSlug}`}
+          href={`${siteRoot}articles/${article.prevSlug}`}
           class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,7 +131,7 @@ const { article } = Astro.props;
 
       {article.nextSlug ? (
         <a
-          href={`/articles/${article.nextSlug}`}
+          href={`${siteRoot}articles/${article.nextSlug}`}
           class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm bg-blue-600 text-white hover:bg-blue-500 transition-colors"
         >
           Next: {article.nextTitle}
