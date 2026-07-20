@@ -15,6 +15,11 @@
   --light-surface-bg: #f7fbf3;
   --light-muted-bg: #e4f0e2;
   --light-border: #cbdcc8;
+  --light-text-strong: #405247;
+  --light-text-body: #52665a;
+  --light-text-muted: #758479;
+  --light-vocab: #a66313;
+  --light-vocab-border: #d8ae55;
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────────── */
@@ -49,12 +54,31 @@ body {
   border-color: var(--light-border);
 }
 
+:root:not(.dark) .text-slate-800,
+:root:not(.dark) .text-slate-700 {
+  color: var(--light-text-strong);
+}
+
+:root:not(.dark) .text-slate-600,
+:root:not(.dark) .text-slate-500 {
+  color: var(--light-text-body);
+}
+
+:root:not(.dark) .text-slate-400 {
+  color: var(--light-text-muted);
+}
+
+:root:not(.dark) .text-blue-500,
+:root:not(.dark) .group-hover\:text-blue-500:hover {
+  color: #4f7f94;
+}
+
 /* ─── Vocab Highlight ────────────────────────────────────────────────────────
    Single definition used everywhere — inline spans in article paragraphs.
    ─────────────────────────────────────────────────────────────────────────── */
 .vocab {
-  color: #d97706;
-  border-bottom: 2px dashed #fbbf24;
+  color: var(--light-vocab);
+  border-bottom: 2px dashed var(--light-vocab-border);
   padding: 0 2px;
   border-radius: 2px;
   font-style: italic;
@@ -66,7 +90,7 @@ body {
   font-style: normal;
   font-size: 1em;
   line-height: inherit;
-  color: #64748b;
+  color: var(--light-text-body);
   font-family: var(--font-ui);
   letter-spacing: 0;
 }
@@ -131,14 +155,9 @@ body {
   animation: fadeInUp 0.45s ease forwards;
 }
 
-/* Stagger children of a .stagger container */
-.stagger > * { opacity: 0; }
-.stagger > *:nth-child(1) { animation: fadeInUp 0.45s ease 0.05s forwards; }
-.stagger > *:nth-child(2) { animation: fadeInUp 0.45s ease 0.10s forwards; }
-.stagger > *:nth-child(3) { animation: fadeInUp 0.45s ease 0.15s forwards; }
-.stagger > *:nth-child(4) { animation: fadeInUp 0.45s ease 0.20s forwards; }
-.stagger > *:nth-child(5) { animation: fadeInUp 0.45s ease 0.25s forwards; }
-.stagger > *:nth-child(6) { animation: fadeInUp 0.45s ease 0.30s forwards; }
+/* Grid entrance animation.
+   所有卡片使用同一条规则；不要写 nth-child 数量表，否则新增文章时还要改 CSS。 */
+.stagger > * { animation: fadeInUp 0.45s ease both; }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────────*/
 ::-webkit-scrollbar       { width: 6px; }
