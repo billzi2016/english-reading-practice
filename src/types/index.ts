@@ -1,7 +1,22 @@
 // 本文件意图：定义文章领域模型，给页面、组件和数据源共享同一套类型边界，避免字段名和取值在各处重复硬编码。
 
-// 分类只允许这三类；新增分类时需要同步组件映射，TypeScript 会提醒遗漏位置。
-export type Category = 'biography' | 'technology' | 'history';
+// 分类由 config/categories.ts 统一提供展示配置；新增分类时同步扩展这里的联合类型和配置表。
+export type Category =
+  | 'biography'
+  | 'technology'
+  | 'history'
+  | 'science'
+  | 'business'
+  | 'culture'
+  | 'society'
+  | 'nature'
+  | 'health'
+  | 'psychology'
+  | 'education'
+  | 'ai'
+  | 'programming'
+  | 'space'
+  | 'engineering';
 
 // 难度等级保持小集合，方便 DifficultyDots 用固定配置渲染。
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';

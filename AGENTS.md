@@ -8,7 +8,7 @@
 - 核心目标：用真实世界主题的英文短文帮助学习者练阅读，同时给重点词汇提供中文解释。
 - 文章应面向有一定英语基础的学习者，难度以 intermediate / advanced 为主。
 - 每篇文章建议 500-800 英文词，正文应适合精读，不要写成碎片化要点列表。
-- 文章主题优先包括：人物传记、技术介绍、历史故事、科学发现、计算机与 AI 相关概念。
+- 文章主题优先包括：人物传记、技术介绍、历史故事、科学发现、商业社会、文化心理、自然健康、教育、计算机、AI、编程、航天、工程等。
 - 文章必须是 AI 原创生成的学习文本，不要复制、改写、搬运现有文章。
 - 文章必须避免版权问题：不得使用受版权保护文章的原文、段落结构、表达方式或近似改写。
 - 涉及真实人物、技术、历史时，应写成学习性介绍，禁止编造真实历史事件、人物经历、日期、奖项、机构、论文或技术事实。
@@ -27,7 +27,7 @@
 ## 最小触碰原则
 
 - 新增文章：只改 `src/data/articles.ts`。
-- 新增分类：只改 `src/types/index.ts` 和 `src/config/categories.ts`。
+- 新增分类：只改 `src/types/index.ts` 和 `src/config/categories.ts`；不要改首页或徽章组件。
 - 新增难度：只改 `src/types/index.ts` 和 `src/config/difficulties.ts`。
 - 改站内链接规则：只改 `src/utils/routes.ts`。
 - 改上一篇/下一篇规则：只改 `src/utils/articles.ts`。
@@ -80,7 +80,8 @@
 1. 修改 `src/types/index.ts` 的 `Category` 联合类型。
 2. 修改 `src/config/categories.ts` 补齐文案和样式。
 3. 不要修改 `CategoryBadge.astro` 或首页按钮结构，除非配置能力本身不够。
-4. 运行 `pnpm build` 验证 TypeScript 是否提示遗漏。
+4. 分类不限制为人物/技术/历史三类；需要新题材时按本流程扩展。
+5. 运行 `pnpm build` 验证 TypeScript 是否提示遗漏。
 
 ## 新增难度流程
 
@@ -99,7 +100,10 @@
 ## 提交和部署
 
 - commit 信息必须中文、清晰、不过长，不超过 10 行。
-- commit 应说明“为什么改”和“改了什么”，不要只写 update/fix。
+- commit 要符合 Linus 风格：标题说明本次变更意图，正文说明为什么改、改了什么、影响范围。
+- commit 标题不要写 `update`、`fix`、`change` 这类空话；必须具体到行为和对象。
+- commit 正文可以用 2-4 行短句，不写流水账，不超过 10 行总长度。
+- 不要把无关改动塞进同一个 commit；一个 commit 只表达一个清晰主题。
 - push 到 `main` 会触发 GitHub Pages 部署。
 - push 前必须至少运行 `pnpm build`，除非用户明确禁止。
 

@@ -9,6 +9,12 @@
   /* 字体由 BaseLayout 的 <link rel="stylesheet"> 加载；这里仅保留字体栈，避免 CSS @import 顺序警告。 */
   --font-body: 'Merriweather', Georgia, serif;
   --font-ui:   'Inter', system-ui, sans-serif;
+
+  /* 浅色模式护眼色板：集中覆盖 Tailwind 默认白/灰底，避免在组件里到处改颜色类。 */
+  --light-page-bg: #edf7ee;
+  --light-surface-bg: #f7fbf3;
+  --light-muted-bg: #e4f0e2;
+  --light-border: #cbdcc8;
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────────── */
@@ -20,6 +26,27 @@ html {
 
 body {
   font-family: var(--font-ui);
+}
+
+/* ─── Light Theme Comfort Overrides ─────────────────────────────────────────
+   只影响浅色模式；深色模式仍由 dark:* utility 控制。
+   这些覆盖把原本偏刺眼的白色/冷灰背景换成低饱和护眼绿色。
+   ─────────────────────────────────────────────────────────────────────────── */
+:root:not(.dark) .bg-slate-50 {
+  background-color: var(--light-page-bg);
+}
+
+:root:not(.dark) .bg-white,
+:root:not(.dark) .bg-white\/95 {
+  background-color: var(--light-surface-bg);
+}
+
+:root:not(.dark) .bg-slate-100 {
+  background-color: var(--light-muted-bg);
+}
+
+:root:not(.dark) .border-slate-200 {
+  border-color: var(--light-border);
 }
 
 /* ─── Vocab Highlight ────────────────────────────────────────────────────────

@@ -56,7 +56,7 @@ pnpm dev
 - 每次改动尽量少碰文件：能改数据/配置/工具函数，就不要改页面或组件。
 - 新增文章只改 `src/data/articles.ts`。
 - 不要手写上一篇/下一篇链接；导航由文章数组顺序自动生成。
-- 分类和难度文案/样式只改 `src/config/`。
+- 分类和难度文案/样式只改 `src/config/`；分类可以扩展，不需要改页面。
 - 站内链接只通过 `src/utils/routes.ts` 生成。
 - 不要因为文章内容变化去修改 PRD。
 - 页面公共结构放在 `src/layouts/BaseLayout.astro`。

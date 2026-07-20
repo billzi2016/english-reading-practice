@@ -56,7 +56,7 @@ Astro prints the actual local URL after startup. In the latest run it used `http
 - Keep each change as small as possible: prefer data/config/utils changes over page or component edits.
 - Add new articles only in `src/data/articles.ts`.
 - Do not hand-write previous/next article links; navigation is derived from article order.
-- Keep category and difficulty labels/styles in `src/config/`.
+- Keep category and difficulty labels/styles in `src/config/`; categories are extensible without editing pages.
 - Keep site URL generation in `src/utils/routes.ts`.
 - Do not update the PRD just because article content changes.
 - Keep shared page structure in `src/layouts/BaseLayout.astro`.
