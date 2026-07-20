@@ -35,7 +35,8 @@ body {
 .vocab::after {
   content: "（" attr(data-cn) "）";
   font-style: normal;
-  font-size: 0.82em;
+  font-size: 1em;
+  line-height: inherit;
   color: #64748b;
   font-family: var(--font-ui);
   letter-spacing: 0;

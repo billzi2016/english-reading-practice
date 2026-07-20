@@ -14,21 +14,24 @@ interface Props {
 const { title, description } = Astro.props;
 ---
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
-  <!-- 主题防闪烁脚本必须在页面绘制前执行，因此保留在 head 内并使用 is:inline。 -->
+  <!-- 主题防闪烁脚本必须在页面绘制前同步执行；这里直接确定 html.dark，避免先渲染默认主题再切换。 -->
   <script is:inline>
-    if (localStorage.getItem('theme') !== 'light') {
-      document.documentElement.classList.add('dark');
-    }
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+    root.classList.toggle('dark', isDark);
+    root.style.colorScheme = isDark ? 'dark' : 'light';
   </script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" />
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen">
   <slot />
 </body>
 </html>

@@ -3,24 +3,36 @@
 // ─── Theme Toggle ─────────────────────────────────────────────────────────────
 // 单一职责：读取/写入主题偏好，并同步更新 DOM class 与 localStorage。
 
+const THEME_STORAGE_KEY = 'theme';
+
+function getSystemPrefersDark(): boolean {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function getInitialThemeIsDark(): boolean {
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  return savedTheme ? savedTheme === 'dark' : getSystemPrefersDark();
+}
+
+// 应用主题到 DOM 和浏览器原生控件。按钮初始化、点击切换都复用这一条路径，避免状态不同步。
+function applyTheme(isDark: boolean, icon: HTMLElement | null): void {
+  document.documentElement.classList.toggle('dark', isDark);
+  document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+  localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+  if (icon) icon.textContent = isDark ? '🌙' : '☀️';
+}
+
 // 初始化主题切换按钮；如果当前页面没有按钮则直接返回，保证同一函数可被多个页面安全复用。
 export function initThemeToggle(): void {
   const btn  = document.getElementById('theme-toggle');
   const icon = document.getElementById('theme-icon');
   if (!btn) return;
 
-  // 将主题变更封装成一个函数，点击事件和初始状态恢复都走同一逻辑，减少分支重复。
-  const applyTheme = (isDark: boolean): void => {
-    document.documentElement.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    if (icon) icon.textContent = isDark ? '🌙' : '☀️';
-  };
-
-  // 默认深色：只有明确保存为 light 时才切到浅色，避免首次加载出现浅色闪烁。
-  applyTheme(localStorage.getItem('theme') !== 'light');
+  // 初始图标要跟 head 中已经同步应用的主题一致，避免按钮图标在 hydration 后跳变。
+  applyTheme(getInitialThemeIsDark(), icon);
 
   btn.addEventListener('click', () => {
-    applyTheme(!document.documentElement.classList.contains('dark'));
+    applyTheme(!document.documentElement.classList.contains('dark'), icon);
   });
 }
 
