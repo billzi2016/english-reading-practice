@@ -1,0 +1,26 @@
+---
+/**
+ * 文件意图：统一渲染亮暗主题按钮。页面只放组件，不复制按钮 DOM、id 和样式。
+ *
+ * 维护重点：
+ *   - id="theme-toggle" 和 id="theme-icon" 是 interactions.ts 的稳定挂载点。
+ *   - size 只控制外观尺寸，不改变主题逻辑。
+ */
+interface Props {
+  size?: 'sm' | 'md';
+}
+
+const { size = 'md' } = Astro.props;
+
+const buttonClass = size === 'sm'
+  ? 'w-8 h-8 rounded-lg text-base'
+  : 'w-9 h-9 rounded-xl text-lg';
+---
+
+<button
+  id="theme-toggle"
+  class={`${buttonClass} bg-slate-100 dark:bg-slate-700 hover:scale-110 transition-transform flex items-center justify-center`}
+  title="Toggle light / dark"
+>
+  <span id="theme-icon">🌙</span>
+</button>

@@ -11,7 +11,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CategoryBadge from '../../components/CategoryBadge.astro';
 import DifficultyDots from '../../components/DifficultyDots.astro';
+import ThemeToggle from '../../components/ThemeToggle.astro';
 import { articles } from '../../data/articles.ts';
+import { getArticleNavigation } from '../../utils/articles.ts';
 import { sitePath } from '../../utils/routes.ts';
 import '../../styles/global.css';
 
@@ -24,6 +26,7 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
+const navigation = getArticleNavigation(articles, article);
 ---
 
 <BaseLayout
@@ -46,13 +49,7 @@ const { article } = Astro.props;
 
       <div class="flex items-center gap-3">
         <span class="text-xs text-slate-400 dark:text-slate-500" id="reading-time">Loading…</span>
-        <button
-          id="theme-toggle"
-          class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 hover:scale-110 transition-transform flex items-center justify-center text-base"
-          title="Toggle light / dark"
-        >
-          <span id="theme-icon">🌙</span>
-        </button>
+        <ThemeToggle size="sm" />
       </div>
 
     </div>
@@ -112,26 +109,26 @@ const { article } = Astro.props;
 
     <!-- Navigation -->
     <div class="mt-10 flex justify-between items-center">
-      {article.prevSlug ? (
+      {navigation.prev ? (
         <a
-          href={sitePath(`articles/${article.prevSlug}`)}
+          href={sitePath(`articles/${navigation.prev.slug}`)}
           class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
-          {article.prevTitle}
+          {navigation.prev.title}
         </a>
       ) : (
         <span class="text-sm text-slate-400 dark:text-slate-600">← First article</span>
       )}
 
-      {article.nextSlug ? (
+      {navigation.next ? (
         <a
-          href={sitePath(`articles/${article.nextSlug}`)}
+          href={sitePath(`articles/${navigation.next.slug}`)}
           class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm bg-blue-600 text-white hover:bg-blue-500 transition-colors"
         >
-          Next: {article.nextTitle}
+          Next: {navigation.next.title}
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>

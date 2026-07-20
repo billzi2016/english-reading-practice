@@ -17,16 +17,18 @@
 │   └── PRD.v2.md
 ├── src/
 │   ├── components/
+│   ├── config/
 │   ├── data/
 │   ├── layouts/
 │   ├── pages/
 │   ├── scripts/
 │   ├── styles/
-│   └── types/
+│   ├── types/
+│   └── utils/
 └── package.json
 ```
 
-`src/data/articles.ts` 是文章元数据和正文内容的唯一数据源。动态路由 `src/pages/articles/[slug].astro` 会根据这些数据生成所有文章页。
+`src/data/articles.ts` 是文章元数据和正文内容的唯一数据源。动态路由 `src/pages/articles/[slug].astro` 会根据这些数据生成所有文章页。分类和难度展示规则放在 `src/config/`；路由和文章导航派生逻辑放在 `src/utils/`。
 
 ## 启动方法
 
@@ -51,7 +53,11 @@ pnpm dev
 
 ## 维护原则
 
+- 每次改动尽量少碰文件：能改数据/配置/工具函数，就不要改页面或组件。
 - 新增文章只改 `src/data/articles.ts`。
+- 不要手写上一篇/下一篇链接；导航由文章数组顺序自动生成。
+- 分类和难度文案/样式只改 `src/config/`。
+- 站内链接只通过 `src/utils/routes.ts` 生成。
 - 不要因为文章内容变化去修改 PRD。
 - 页面公共结构放在 `src/layouts/BaseLayout.astro`。
 - 可复用 UI 放在 `src/components/`。

@@ -3,7 +3,7 @@ import type { Article } from '../types/index.ts';
 // 本文件意图：集中维护所有文章数据，让首页、详情页和导航都从同一份数据读取，避免多个 HTML 文件重复维护。
 
 // 单一数据源：新增文章时只追加一个 Article 对象，不需要再手写新的页面文件。
-// 维护重点：slug 必须唯一；prevSlug/nextSlug 要和目标文章 slug 对齐，否则导航会断。
+// 维护重点：slug 必须唯一；上一篇/下一篇由 utils/articles.ts 根据数组顺序自动生成，禁止在这里手写导航字段。
 
 export const articles: Article[] = [
   {
@@ -37,8 +37,6 @@ export const articles: Article[] = [
       { word: 'manipulate', cn: '操纵，处理' },
       { word: 'inherit', cn: '继承（品质/特征）' },
     ],
-    nextSlug: 'kubernetes',
-    nextTitle: 'Kubernetes',
   },
 
   {
@@ -70,10 +68,6 @@ export const articles: Article[] = [
       { word: 'scale', cn: '扩展，伸缩' },
       { word: 'open-source', cn: '开源的' },
     ],
-    prevSlug: 'ada-lovelace',
-    prevTitle: 'Ada Lovelace',
-    nextSlug: 'marie-curie',
-    nextTitle: 'Marie Curie',
   },
 
   {
@@ -105,10 +99,6 @@ export const articles: Article[] = [
       { word: 'commotion', cn: '骚动，喧闹' },
       { word: 'sacrifice', cn: '牺牲，自我奉献' },
     ],
-    prevSlug: 'kubernetes',
-    prevTitle: 'Kubernetes',
-    nextSlug: 'lora-ai',
-    nextTitle: 'LoRA — Fine-Tuning AI',
   },
 
   {
@@ -139,10 +129,6 @@ export const articles: Article[] = [
       { word: 'ingenuity', cn: '聪明才智，独创性' },
       { word: 'democratize', cn: '使大众化，民主化' },
     ],
-    prevSlug: 'marie-curie',
-    prevTitle: 'Marie Curie',
-    nextSlug: 'alan-turing',
-    nextTitle: 'Alan Turing',
   },
 
   {
@@ -174,10 +160,6 @@ export const articles: Article[] = [
       { word: 'indecency', cn: '猥亵，有伤风化' },
       { word: 'castration', cn: '阉割' },
     ],
-    prevSlug: 'lora-ai',
-    prevTitle: 'LoRA — Fine-Tuning AI',
-    nextSlug: 'birth-of-the-internet',
-    nextTitle: 'Birth of the Internet',
   },
 
   {
@@ -207,20 +189,5 @@ export const articles: Article[] = [
       { word: 'exabytes', cn: '艾字节（超大数据单位）' },
       { word: 'unprecedented', cn: '史无前例的' },
     ],
-    prevSlug: 'alan-turing',
-    prevTitle: 'Alan Turing',
   },
 ];
-
-// ─── Lookup Helpers ──────────────────────────────────────────────────────────
-
-// 按 slug 查找文章详情；文章页路由和未来的站内跳转都可以复用这个入口。
-export function getArticleBySlug(slug: string): Article | undefined {
-  return articles.find(a => a.slug === slug);
-}
-
-// 按分类筛选文章；'all' 是 UI 层的虚拟分类，用于恢复完整列表。
-export function getArticlesByCategory(category: string): Article[] {
-  if (category === 'all') return articles;
-  return articles.filter(a => a.category === category);
-}

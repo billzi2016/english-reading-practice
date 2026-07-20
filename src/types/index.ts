@@ -12,6 +12,16 @@ export interface VocabEntry {
   cn: string;
 }
 
+export interface ArticleNavigationItem {
+  slug: string;
+  title: string;
+}
+
+export interface ArticleNavigation {
+  prev?: ArticleNavigationItem;
+  next?: ArticleNavigationItem;
+}
+
 // 预留的结构化段落类型；当前正文先使用 HTML 字符串，后续要拆分词汇标注时可迁移到这里。
 export interface ArticleParagraph {
   text: string;
@@ -36,8 +46,4 @@ export interface Article extends ArticleMeta {
   tip?: string;
   paragraphs: string[];   // raw HTML strings with <span class="vocab"> already embedded
   vocabulary: VocabEntry[];
-  prevSlug?: string;
-  prevTitle?: string;
-  nextSlug?: string;
-  nextTitle?: string;
 }

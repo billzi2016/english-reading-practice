@@ -17,16 +17,18 @@ This project keeps content, rendering, and browser interactions separated so it 
 │   └── PRD.v2.md
 ├── src/
 │   ├── components/
+│   ├── config/
 │   ├── data/
 │   ├── layouts/
 │   ├── pages/
 │   ├── scripts/
 │   ├── styles/
-│   └── types/
+│   ├── types/
+│   └── utils/
 └── package.json
 ```
 
-`src/data/articles.ts` is the single source of truth for article metadata and article body content. The dynamic route `src/pages/articles/[slug].astro` renders all article pages from that shared data.
+`src/data/articles.ts` is the single source of truth for article metadata and article body content. The dynamic route `src/pages/articles/[slug].astro` renders all article pages from that shared data. Category and difficulty display rules live in `src/config/`; route and article navigation helpers live in `src/utils/`.
 
 ## Commands
 
@@ -51,7 +53,11 @@ Astro prints the actual local URL after startup. In the latest run it used `http
 
 ## Maintenance Notes
 
+- Keep each change as small as possible: prefer data/config/utils changes over page or component edits.
 - Add new articles only in `src/data/articles.ts`.
+- Do not hand-write previous/next article links; navigation is derived from article order.
+- Keep category and difficulty labels/styles in `src/config/`.
+- Keep site URL generation in `src/utils/routes.ts`.
 - Do not update the PRD just because article content changes.
 - Keep shared page structure in `src/layouts/BaseLayout.astro`.
 - Keep reusable UI in `src/components/`.
