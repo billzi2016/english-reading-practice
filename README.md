@@ -87,7 +87,7 @@ Use another local Ollama model:
 OLLAMA_MODEL="gpt-oss:120b" python3 llm/ollama_generate.py 5
 ```
 
-Automatic topic selection runs in batches of 5. The generator uses `think="high"`; article writing uses `temperature=0.1`, while topic selection uses `temperature=0.7`. If a topic batch or article fails 3 retries, the script exits non-zero and keeps already created files.
+Automatic topic selection runs in batches of 5. The generator defaults to `think="medium"`; switch `THINK_LEVEL` to `high` in `llm/ollama_generate.py` for slower, more careful output. Article writing uses `temperature=0.1`, while topic selection uses `temperature=0.7`. If a topic batch or article fails 3 retries, the script exits non-zero and keeps already created files.
 
 ## Maintenance Notes
 
@@ -102,6 +102,9 @@ Automatic topic selection runs in batches of 5. The generator uses `think="high"
 - Keep reusable UI in `src/components/`.
 - Keep browser-only behavior in `src/scripts/interactions.ts`.
 - GPT-OSS 120B's documented knowledge cutoff is 2024-06-01, so generated factual stories should stay within information knowable before that date.
+- Generated articles should avoid discriminatory, hateful, or demeaning language and handle sensitive topics with factual, respectful wording.
+- Generated articles should be engaging and novel, preferably about uncommon real-world knowledge, with a clear story arc and concrete scenes.
+- Vocabulary annotation should be practical, not symbolic: difficult words, technical terms, places, materials, and key phrases should include Chinese explanations inline.
 
 ## Content Notice
 

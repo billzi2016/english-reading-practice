@@ -75,7 +75,7 @@ python3 llm/ollama_generate.py 12
 OLLAMA_MODEL="gpt-oss:120b" python3 llm/ollama_generate.py 5
 ```
 
-自动选题按每批 5 篇执行。生成脚本固定 `think="high"`；正文生成使用 `temperature=0.1`，自动选题使用 `temperature=0.7`。如果某批选题或某篇文章连续 3 次失败，脚本会非 0 退出，并保留已经成功生成的文件。
+自动选题按每批 5 篇执行。生成脚本默认 `think="medium"`；需要更稳但更慢的结果时，把 `llm/ollama_generate.py` 里的 `THINK_LEVEL` 手动切成 `high`。正文生成使用 `temperature=0.1`，自动选题使用 `temperature=0.7`。如果某批选题或某篇文章连续 3 次失败，脚本会非 0 退出，并保留已经成功生成的文件。
 
 ## 常用命令
 
@@ -102,6 +102,9 @@ OLLAMA_MODEL="gpt-oss:120b" python3 llm/ollama_generate.py 5
 - 可复用 UI 放在 `src/components/`。
 - 浏览器交互逻辑放在 `src/scripts/interactions.ts`。
 - GPT-OSS 120B 文档标注的知识截止时间是 2024-06-01，事实类故事应只写该日期前可确认的信息。
+- 生成文章不得包含歧视、仇恨或羞辱性表达；敏感主题必须保持事实、克制和尊重。
+- 生成文章要有趣、新奇，优先写生活中不常见但真实存在的知识，并有清楚故事线和具体场景。
+- 词汇标注必须真正帮助阅读，难词、专业术语、地点、材料和关键短语都要在正文里加中文解释。
 
 ## 内容说明
 

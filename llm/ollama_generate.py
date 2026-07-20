@@ -28,6 +28,8 @@ MAX_RETRIES = 3
 AUTO_TOPIC_BATCH_SIZE = 5
 TOPIC_TEMPERATURE = 0.7
 ARTICLE_TEMPERATURE = 0.1
+THINK_LEVEL = "medium"
+# THINK_LEVEL = "high"  # 质量更稳但速度更慢；需要时手动切换这一行。
 
 
 def retry(label: str, action):
@@ -72,7 +74,7 @@ def generate_topics(count: int, model: str) -> list[str]:
                 {"role": "system", "content": TOPIC_SYSTEM_PROMPT},
                 {"role": "user", "content": build_topic_prompt(count)},
             ],
-            think="high",
+            think=THINK_LEVEL,
             stream=False,
             options={"temperature": TOPIC_TEMPERATURE},
         )
@@ -82,14 +84,14 @@ def generate_topics(count: int, model: str) -> list[str]:
 
 
 def generate_article(topic: str, model: str) -> str:
-    """调用 Ollama chat，固定 temperature=0.1 和 think=high 生成文章源码。"""
+    """调用 Ollama chat，固定 temperature=0.1 和中等 thinking 生成文章源码。"""
     response = chat(
         model=model,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": build_user_prompt(topic)},
         ],
-        think="high",
+        think=THINK_LEVEL,
         stream=False,
         options={"temperature": ARTICLE_TEMPERATURE},
     )
