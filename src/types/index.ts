@@ -16,7 +16,12 @@ export type Category =
   | 'ai'
   | 'programming'
   | 'space'
-  | 'engineering';
+  | 'engineering'
+  | 'architecture'
+  | 'environment'
+  | 'geography'
+  | 'medicine'
+  | 'travel';
 
 // 难度等级保持小集合，方便 DifficultyDots 用固定配置渲染。
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';

@@ -84,6 +84,31 @@ export const CATEGORY_CONFIG: Record<Category, CategoryConfig> = {
     filterLabel: '🛠 Engineering',
     badgeClass: 'bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-300',
   },
+  architecture: {
+    badgeLabel: '🏗 Architecture',
+    filterLabel: '🏗 Architecture',
+    badgeClass: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300',
+  },
+  environment: {
+    badgeLabel: '🌎 Environment',
+    filterLabel: '🌎 Environment',
+    badgeClass: 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300',
+  },
+  geography: {
+    badgeLabel: '🗺 Geography',
+    filterLabel: '🗺 Geography',
+    badgeClass: 'bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300',
+  },
+  medicine: {
+    badgeLabel: '🧬 Medicine',
+    filterLabel: '🧬 Medicine',
+    badgeClass: 'bg-pink-100 dark:bg-pink-900/50 text-pink-600 dark:text-pink-300',
+  },
+  travel: {
+    badgeLabel: '🧭 Travel',
+    filterLabel: '🧭 Travel',
+    badgeClass: 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300',
+  },
 };
 
 export const CATEGORY_OPTIONS = Object.entries(CATEGORY_CONFIG).map(([value, config]) => ({
